@@ -1,0 +1,19 @@
+# 出海联盟官网 - Render 部署配置
+# 纯静态网站，无需后端
+
+services:
+  - type: web
+    name: chlm-website
+    runtime: static
+    region: singapore
+    plan: free
+    buildCommand: ""
+    startCommand: ""
+    staticPublishPath: .
+    headers:
+      - path: "/*"
+        name: "Cache-Control"
+        value: "public, max-age=3600"
+    envVars:
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,16 @@
+# Allow all AI bots
+User-agent: *
+Allow: /
+
+# Specific AI bots
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-extended
+Allow: /
+User-agent: Bytespider
+Allow: /
+
+# Sitemap
+Sitemap: https://chlm-official.com/sitemap.xml
