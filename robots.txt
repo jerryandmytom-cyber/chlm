@@ -1,16 +1,22 @@
-# Allow all AI bots
+# Allow all bots
 User-agent: *
 Allow: /
 
-# Specific AI bots
+# AI bots
 User-agent: GPTBot
 Allow: /
 User-agent: ClaudeBot
 Allow: /
-User-agent: Google-extended
+User-agent: Googlebot
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: YandexBot
+Allow: /
+User-agent: Applebot
 Allow: /
 User-agent: Bytespider
 Allow: /
 
 # Sitemap
-Sitemap: https://chlm-official.com/sitemap.xml
+Sitemap: https://chlm.onrender.com/sitemap.xml
