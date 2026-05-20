@@ -70,7 +70,6 @@
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         html { scroll-behavior: smooth; }
         
         body {
@@ -181,8 +180,7 @@
             overflow: hidden;
         }
         
-        .hero::before {
-            content: '';
+        .hero-bg {
             position: absolute;
             top: 0;
             left: 0;
@@ -345,11 +343,7 @@
         }
         
         /* Stats */
-        .stats-section {
-            padding: 100px 20px;
-            background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.02) 50%, transparent 100%);
-        }
-        
+        .stats-section { padding: 100px 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
         .stats-grid {
@@ -405,7 +399,7 @@
             font-weight: 500;
         }
         
-        /* Section Titles */
+        /* Section */
         .section { padding: 100px 20px; }
         
         .section-header {
@@ -436,7 +430,7 @@
             margin: 0 auto;
         }
         
-        /* Service Cards */
+        /* Service Cards - with real images */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -447,10 +441,9 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 32px;
+            overflow: hidden;
             transition: all 0.4s;
             position: relative;
-            overflow: hidden;
             cursor: pointer;
         }
         
@@ -460,43 +453,15 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.4);
         }
         
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background: linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.4s;
+        .service-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
         }
         
-        .service-card:hover::before { opacity: 1; }
-        
-        .service-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 24px;
-            position: relative;
-        }
-        
-        .service-card:nth-child(1) .service-icon { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
-        .service-card:nth-child(2) .service-icon { background: linear-gradient(135deg, #4ECDC4, #44A08D); }
-        .service-card:nth-child(3) .service-icon { background: linear-gradient(135deg, #667EEA, #764BA2); }
-        .service-card:nth-child(4) .service-icon { background: linear-gradient(135deg, #F093FB, #F5576C); }
-        .service-card:nth-child(5) .service-icon { background: linear-gradient(135deg, #434343, #000000); }
-        .service-card:nth-child(6) .service-icon { background: linear-gradient(135deg, #11998E, #38EF7D); }
-        
-        .service-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .service-body {
+            padding: 28px 28px 32px;
             position: relative;
         }
         
@@ -504,7 +469,13 @@
             color: var(--gold);
             font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
             position: relative;
         }
         
@@ -517,8 +488,8 @@
         
         .service-arrow {
             position: absolute;
-            bottom: 32px;
-            right: 32px;
+            bottom: 28px;
+            right: 28px;
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -529,6 +500,7 @@
             opacity: 0;
             transform: translateX(-10px);
             transition: all 0.3s;
+            font-size: 1.2rem;
         }
         
         .service-card:hover .service-arrow {
@@ -536,7 +508,23 @@
             transform: translateX(0);
         }
         
-        /* About Section */
+        /* Hero Banner with real image */
+        .hero-banner {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 60px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        }
+        
+        .hero-banner img {
+            width: 100%;
+            display: block;
+        }
+        
+        /* About */
         .about-section {
             background: var(--card-bg);
             border-top: 1px solid var(--card-border);
@@ -564,53 +552,18 @@
             line-height: 1.8;
         }
         
-        .about-visual {
-            position: relative;
-            height: 400px;
+        .about-image {
             border-radius: 24px;
             overflow: hidden;
-        }
-        
-        .about-gradient {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, 
-                rgba(212, 175, 55, 0.2) 0%, 
-                rgba(88, 166, 255, 0.1) 50%,
-                rgba(63, 185, 80, 0.1) 100%);
             border: 1px solid var(--card-border);
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
         }
         
-        .about-badge {
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 12px 24px;
-            border-radius: 50px;
-            color: var(--gold-light);
-            font-weight: 600;
+        .about-image img {
+            width: 100%;
+            display: block;
         }
         
-        .about-year {
-            font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .about-location {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-        
-        /* Rules Section */
+        /* Rules */
         .rules-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -676,11 +629,7 @@
             flex-wrap: wrap;
         }
         
-        .footer-links a {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        
+        .footer-links a { color: var(--text-muted); font-size: 0.9rem; }
         .footer-links a:hover { color: var(--gold); }
         
         .footer-copy {
@@ -741,6 +690,7 @@
     
     <!-- Hero -->
     <section class="hero" id="hero">
+        <div class="hero-bg"></div>
         <div class="hero-badge">⚡ 始于 2019 · 悉尼 Hurstville</div>
         <h1 class="hero-title">全球出海资源对接<br>的信任基石</h1>
         <p class="hero-sub">不做中介，不参与交易，只构建最纯粹的海外资源生态。<br>为全球出海用户提供稳定、安全、高效的沟通与对接平台。</p>
@@ -750,6 +700,11 @@
                 加入 Telegram 社群
             </a>
             <a href="#about" class="btn-secondary">了解更多</a>
+        </div>
+        
+        <!-- Main Team Banner -->
+        <div class="hero-banner">
+            <img src="public/chlm1 (4).jpg" alt="出海联盟团队" loading="eager">
         </div>
         
         <!-- Logo Carousel -->
@@ -823,7 +778,7 @@
         </div>
     </section>
     
-    <!-- Services -->
+    <!-- Services with Real Images -->
     <section class="section" id="services">
         <div class="container">
             <div class="section-header">
@@ -834,51 +789,63 @@
             
             <div class="services-grid">
                 <a href="https://t.me/CHLM" class="service-card" target="_blank">
-                    <div class="service-icon">📢</div>
-                    <h3 class="service-title">出海广告</h3>
-                    <div class="service-tag">@CHLM</div>
-                    <p class="service-desc">专属会员展示区，精准触达 80,000+ 行业用户。大屏图文、供需包月、置顶推广等多种形式，让产品被看到，让客户主动来。</p>
-                    <div class="service-arrow">→</div>
+                    <img class="service-img" src="public/chlm1 (5).jpg" alt="出海广告" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@CHLM</div>
+                        <h3 class="service-title">出海广告</h3>
+                        <p class="service-desc">专属会员展示区，精准触达 80,000+ 行业用户。大屏图文、供需包月、置顶推广等多种形式，让产品被看到，让客户主动来。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
                 </a>
                 
                 <a href="https://t.me/CHGX" class="service-card" target="_blank">
-                    <div class="service-icon">🤝</div>
-                    <h3 class="service-title">出海供需</h3>
-                    <div class="service-tag">@CHGX</div>
-                    <p class="service-desc">实时上下游对接，过滤低质信息。非会员可免费发布一条需求广告，会员每天免费发布，广告供需首选出海联盟。</p>
-                    <div class="service-arrow">→</div>
+                    <img class="service-img" src="public/chlm1 (2).jpg" alt="出海公群" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@CHGQ · @CHGX</div>
+                        <h3 class="service-title">出海供需 · 公群</h3>
+                        <p class="service-desc">实时上下游对接，过滤低质信息。公群背书 + 供需发布，熟人社交与行业公群深度融合，覆盖出海全生态。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
                 </a>
                 
                 <a href="https://t.me/ChuHaiGGG" class="service-card" target="_blank">
-                    <div class="service-icon">🛡️</div>
-                    <h3 class="service-title">出海担保</h3>
-                    <div class="service-tag">@ChuHaiGGG</div>
-                    <p class="service-desc">官方担保机制，为交易保驾护航。有效降低被骗风险，提高资源对接成功率，零资金纠纷记录，保证您的资金安全。</p>
-                    <div class="service-arrow">→</div>
-                </a>
-                
-                <a href="https://t.me/CHGQ" class="service-card" target="_blank">
-                    <div class="service-icon">🏢</div>
-                    <h3 class="service-title">出海公群</h3>
-                    <div class="service-tag">@CHGQ</div>
-                    <p class="service-desc">熟人社交与行业公群深度融合。5个会员群 + 2个交流群 + 7个频道，覆盖出海全生态，出海人的专业入口。</p>
-                    <div class="service-arrow">→</div>
+                    <img class="service-img" src="public/chlm1 (1).jpg" alt="出海担保" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@ChuHaiGGG</div>
+                        <h3 class="service-title">出海担保</h3>
+                        <p class="service-desc">官方担保机制，为交易保驾护航。有效降低被骗风险，提高资源对接成功率，零资金纠纷记录，保证您的资金安全。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
                 </a>
                 
                 <a href="https://t.me/ChuHaiFFF" class="service-card" target="_blank">
-                    <div class="service-icon">⚠️</div>
-                    <h3 class="service-title">出海曝光</h3>
-                    <div class="service-tag">@ChuHaiFFF</div>
-                    <p class="service-desc">真实黑名单曝光，降低被骗风险。欺诈无处不在，交易请走担保，让骗子无所遁形。</p>
-                    <div class="service-arrow">→</div>
+                    <img class="service-img" src="public/chlm1 (4).jpg" alt="出海曝光" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@ChuHaiFFF</div>
+                        <h3 class="service-title">出海曝光 · 黑名单</h3>
+                        <p class="service-desc">真实黑名单曝光，降低被骗风险。欺诈无处不在，交易请走担保，让骗子无所遁形。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
                 </a>
                 
                 <a href="https://t.me/GuanJia" class="service-card" target="_blank">
-                    <div class="service-icon">🏠</div>
-                    <h3 class="service-title">出海管家</h3>
-                    <div class="service-tag">@GuanJia</div>
-                    <p class="service-desc">智能资源助手，一键加入社群、投放广告、发布需求、使用工具，让出海更高效，让您的收益快人一步。</p>
-                    <div class="service-arrow">→</div>
+                    <img class="service-img" src="public/chlm1 (6).jpg" alt="出海管家" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@GuanJia</div>
+                        <h3 class="service-title">出海管家</h3>
+                        <p class="service-desc">智能资源助手，一键加入社群、投放广告、发布需求、使用工具，让出海更高效，让您的收益快人一步。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
+                </a>
+                
+                <a href="https://t.me/CHLM" class="service-card" target="_blank">
+                    <img class="service-img" src="public/chlm1 (3).jpg" alt="出海会员" loading="lazy">
+                    <div class="service-body">
+                        <div class="service-tag">@CHLM</div>
+                        <h3 class="service-title">出海会员</h3>
+                        <p class="service-desc">加入出海会员，享受出海人生。资源在手，机会在前。链接优质资源，享受专属权益，不只是身份，更是资源和机会。</p>
+                        <div class="service-arrow">→</div>
+                    </div>
                 </a>
             </div>
         </div>
@@ -895,13 +862,8 @@
                     <p>联盟始终坚持"不做中介、不代理、不交易"，专注于构建真实、有价值的海外资源生态。为了保障社群质量，我们严格禁止中国业务（含港澳台）、政治、色情等一切违规内容，确保所有用户都能在干净透明的环境中进行交流。</p>
                     <p>目前联盟由 5个会员群 + 2个交流群 + 7个频道 组成，已拥有真实会员 4,000+、累计用户 80,000+，并在行业中以公开透明、从未出现资金纠纷的良好记录著称。</p>
                 </div>
-                <div class="about-visual">
-                    <div class="about-gradient">
-                        <div class="about-badge">EST. 2019</div>
-                        <div class="about-year">6+</div>
-                        <div style="color: var(--text-muted);">年持续运营</div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">澳大利亚 · 悉尼 Hurstville</div>
-                    </div>
+                <div class="about-image">
+                    <img src="public/chlm1 (4).jpg" alt="出海联盟团队" loading="lazy">
                 </div>
             </div>
         </div>
