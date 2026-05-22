@@ -1,6 +1,6 @@
 """
 出海联盟网站 - 每日自动生成内容
-从 @quanqiutufa 频道收集当天帖子，生成HTML博客文章并推送GitHub
+从多个 Telegram 频道收集当天帖子，生成HTML博客文章并推送GitHub
 """
 
 import os, sys, re, json, asyncio, subprocess
@@ -18,24 +18,17 @@ API_ID = int(os.getenv("API_ID", "0"))
 API_HASH = os.getenv("API_HASH", "")
 SESSION_STRING = os.getenv("SESSION_STRING", "")
 
-SOURCE_CHANNEL = "@quanqiutufa"  # 发布到的频道 = 内容来源
+# 多频道采集
+SOURCE_CHANNELS = [
+    "@quanqiutufa",  # 主频道
+    "@chgq",         # 新增频道
+]
+
 BLOG_DIR = WORKDIR / "blog" / "daily"
 
-# ── 工具函数 ─────────────────────────────────────────────────────────────────
+# ── 内容过滤 ─────────────────────────────────────────────────────────────────
 
-def run_cmd(cmd: list[str]) -> str:
-    """执行 git 命令"""
-    try:
-        result = subprocess.run(
-            cmd, cwd=WORKDIR, capture_output=True, text=True, encoding="utf-8"
-        )
-        return result.stdout + result.stderr
-    except Exception as e:
-        return str(e)
-
-
-# ── 内容过滤：必须满足以下条件之一 ───────────────────────────────────────
-# 条件A：包含主题关键词
+# 条件A：主题关键词
 TOPIC_KEYWORDS = [
     "Facebook广告投放", "facebook广告投放",
     "谷歌广告投放", "Google广告投放", "google广告投放",
@@ -48,7 +41,7 @@ TOPIC_KEYWORDS = [
     "出海营销", "跨境推广",
 ]
 
-# 条件B：包含 hashtag 关键词
+# 条件B：hashtag关键词
 HASHTAG_KEYWORDS = [
     "#出海", "#担保", "#会员", "#代投", "#引流",
     "#数据", "#流量", "#支付", "#号商", "#通道",
@@ -73,13 +66,17 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
     """生成单篇博客HTML"""
     
     items_html = ""
-    for i, (source, text) in enumerate(items, 1):
-        if text:
-            items_html += f"""
+    for source, text in items:
+        # 转义HTML特殊字符
+        safe_source = source.replace("<", "&lt;").replace(">", "&gt;")
+        safe_text = text.replace("<", "&lt;").replace(">", "&gt;")
+        items_html += f"""
         <div class="news-item">
-            <div class="news-source">{source}</div>
-            <div class="news-text">{text}</div>
+            <div class="news-source">{safe_source}</div>
+            <div class="news-text">{safe_text}</div>
         </div>"""
+    
+    date_display = datetime.now().strftime("%Y年%m月%d日")
     
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -103,7 +100,7 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
       "dateModified": "{date_str}",
       "author": {{ "@type": "Organization", "name": "出海联盟", "url": "https://chlm.onrender.com" }},
       "publisher": {{ "@type": "Organization", "name": "出海联盟", "url": "https://chlm.onrender.com" }},
-      "description": "出海行业每日资讯汇总",
+      "description": "每日广告投放与营销干货资讯汇总",
       "mainEntityOfPage": {{ "@type": "WebPage", "@id": "https://chlm.onrender.com/blog/daily/{date_str}.html" }}
     }}
     </script>
@@ -129,16 +126,20 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
         
         .article-header {{ margin-bottom: 2.5rem; border-bottom: 1px solid #2a2a4a; padding-bottom: 1.5rem; }}
         .article-header h1 {{ font-size: 2rem; color: #fff; margin-bottom: 0.8rem; line-height: 1.3; }}
-        .article-meta {{ display: flex; gap: 1.5rem; font-size: 0.85rem; color: #888; }}
+        .article-meta {{ display: flex; gap: 1.5rem; font-size: 0.85rem; color: #888; flex-wrap: wrap; }}
         .article-meta span {{ display: flex; align-items: center; gap: 0.4rem; }}
         
         .ai-summary {{ background: linear-gradient(135deg, #1a2a3a, #0d1f2e); border: 1px solid #2a4a6a; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }}
         .ai-summary h2 {{ color: #4fc3f7; font-size: 1rem; margin-bottom: 0.8rem; }}
         .ai-summary p {{ color: #ccc; font-size: 0.95rem; }}
+        .ai-summary ul {{ color: #ccc; font-size: 0.9rem; margin-top: 0.5rem; padding-left: 1.5rem; }}
+        
+        .topics-bar {{ display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 2rem; }}
+        .topic-tag {{ background: #1a2a4a; color: #4fc3f7; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }}
         
         .news-item {{ background: linear-gradient(135deg, #1a1a2e, #141428); border: 1px solid #2a2a4a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.2rem; }}
         .news-source {{ color: #4fc3f7; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }}
-        .news-text {{ color: #ccc; font-size: 0.95rem; line-height: 1.8; }}
+        .news-text {{ color: #ccc; font-size: 0.95rem; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }}
         
         .article-footer {{ margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #2a2a4a; text-align: center; color: #555; font-size: 0.85rem; }}
         .article-footer a {{ color: #4fc3f7; }}
@@ -153,6 +154,7 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
         @media (max-width: 768px) {{
             .nav-links {{ display: none; }}
             .article-header h1 {{ font-size: 1.5rem; }}
+            .article-meta {{ flex-direction: column; gap: 0.5rem; }}
         }}
     </style>
 </head>
@@ -182,17 +184,31 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
                 <div class="article-meta">
                     <span>📅 {date_str}</span>
                     <span>🤖 自动生成</span>
-                    <span>📢 <a href="https://t.me/quanqiutufa" target="_blank">@quanqiutufa</a></span>
+                    <span>📢 {len(items)} 条内容</span>
                 </div>
             </header>
             
             <div class="ai-summary">
                 <h2>📋 今日要点</h2>
-                <p>出海联盟每日资讯汇总，涵盖跨境电商、海外创业、供应链等领域的重要动态。</p>
+                <p>出海联盟每日资讯汇总，涵盖以下热门主题：</p>
+                <ul>
+                    <li>Facebook / Google / TikTok / Instagram / Telegram 广告投放</li>
+                    <li>SEO优化技巧与AI工具应用</li>
+                    <li>独立站推广与流量获取策略</li>
+                </ul>
+            </div>
+            
+            <div class="topics-bar">
+                <span class="topic-tag">#广告投放</span>
+                <span class="topic-tag">#Facebook</span>
+                <span class="topic-tag">#TikTok</span>
+                <span class="topic-tag">#SEO</span>
+                <span class="topic-tag">#AI工具</span>
+                <span class="topic-tag">#出海营销</span>
             </div>
             
             <section class="news-list">
-                {items_html if items_html else "<p style='color:#888;text-align:center;padding:2rem;'>今日暂无新内容，请稍后再访问。</p>"}
+                {items_html if items_html else "<p style='color:#888;text-align:center;padding:2rem;'>今日暂无相关新内容，请稍后再访问。</p>"}
             </section>
             
             <footer class="article-footer">
@@ -220,22 +236,16 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
     return html
 
 
-def update_sitemap(date_str: str):
-    """更新 sitemap.xml 加入新文章"""
+def update_sitemap(date_str: str) -> bool:
+    """更新 sitemap.xml"""
     sitemap_file = WORKDIR / "sitemap.xml"
-    
-    # 读取现有 sitemap
-    if sitemap_file.exists():
-        content = sitemap_file.read_text(encoding="utf-8")
-    else:
-        content = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
-    
-    # 检查是否已有这篇
-    if f"blog/daily/{date_str}.html" in content:
-        print(f"[跳过] sitemap.xml 已包含 {date_str} 条目")
+    if not sitemap_file.exists():
         return False
     
-    # 插入新条目（在 </urlset> 前）
+    content = sitemap_file.read_text(encoding="utf-8")
+    if f"blog/daily/{date_str}.html" in content:
+        return False
+    
     new_entry = f"""
   <url>
     <loc>https://chlm.onrender.com/blog/daily/{date_str}.html</loc>
@@ -250,6 +260,15 @@ def update_sitemap(date_str: str):
     return True
 
 
+def run_cmd(cmd: list[str]) -> str:
+    """执行 git 命令"""
+    try:
+        result = subprocess.run(cmd, cwd=WORKDIR, capture_output=True, text=True, encoding="utf-8")
+        return result.stdout + result.stderr
+    except Exception as e:
+        return str(e)
+
+
 # ── 主程序 ───────────────────────────────────────────────────────────────────
 
 async def main():
@@ -258,7 +277,7 @@ async def main():
     date_str = datetime.now().strftime("%Y-%m-%d")
     date_display = datetime.now().strftime("%Y年%m月%d日")
     
-    # ── 1. 连接 Telegram 读取当天帖子 ─────────────────────────────────────
+    # ── 1. 连接 Telegram ────────────────────────────────────────────────────
     app = Client(
         "auto_poster",
         api_id=API_ID,
@@ -271,45 +290,33 @@ async def main():
     print(f"[连接] Telegram 已连接")
     
     items: list[tuple[str, str]] = []
+    cutoff = datetime.now().replace(hour=0, minute=0, second=0)
     
-    try:
-        # 读取今天的消息（从昨天开始算，确保不漏）
-        cutoff = datetime.now().replace(hour=0, minute=0, second=0)
-        
-        async for msg in app.get_chat_history(SOURCE_CHANNEL, limit=50):
-            # 跳过无效消息
-            if not (msg.text or msg.caption):
-                continue
-            
-            # 只处理今天的
-            if msg.date.replace(tzinfo=None) < cutoff:
-                continue
-            
-            raw_text = msg.caption or msg.text or ""
-            # 跳过无效消息
-            if not raw_text:
-                continue
-            
-            # 只处理今天的
-            if msg.date.replace(tzinfo=None) < cutoff:
-                continue
-            
-            # 只采集指定主题
-            if not is_relevant(raw_text):
-                continue
-            
-            source = msg.chat.username or msg.chat.title or "出海资讯"
-            text = raw_text[:1500]  # 限制长度
-            
-            if len(text) >= 20:  # 至少20字
-                items.append((source, text))
-                print(f"  + 采集: {source} | {text[:50]}...")
-    except Exception as e:
-        print(f"[错误] 读取频道失败: {e}")
-    finally:
-        await app.stop()
+    # ── 2. 遍历所有频道采集 ─────────────────────────────────────────────────
+    for ch in SOURCE_CHANNELS:
+        print(f"[扫描] 频道: {ch}")
+        try:
+            async for msg in app.get_chat_history(ch, limit=50):
+                raw_text = msg.caption or msg.text or ""
+                if not raw_text:
+                    continue
+                if msg.date.replace(tzinfo=None) < cutoff:
+                    continue
+                if not is_relevant(raw_text):
+                    continue
+                
+                source = msg.chat.username or msg.chat.title or ch.replace("@", "")
+                text = raw_text[:1500]
+                if len(text) >= 20:
+                    items.append((source, text))
+                    print(f"  + {source} | {text[:40]}...")
+        except Exception as e:
+            print(f"[错误] 扫描 {ch} 失败: {e}")
+            continue
     
-    # ── 2. 生成 HTML ─────────────────────────────────────────────────────────
+    await app.stop()
+    
+    # ── 3. 生成 HTML ─────────────────────────────────────────────────────────
     title = f"出海资讯日报 {date_display}"
     html = make_html_article(title, date_str, items)
     
@@ -318,10 +325,10 @@ async def main():
     out_file.write_text(html, encoding="utf-8")
     print(f"[生成] {out_file.name}")
     
-    # ── 3. 更新 sitemap ────────────────────────────────────────────────────────
+    # ── 4. 更新 sitemap ──────────────────────────────────────────────────────
     sitemap_updated = update_sitemap(date_str)
     
-    # ── 4. Git 推送 ───────────────────────────────────────────────────────────
+    # ── 5. Git 推送 ──────────────────────────────────────────────────────────
     changes = run_cmd(["git", "status", "--porcelain"])
     if not changes.strip():
         print("[跳过] 没有内容变更")
