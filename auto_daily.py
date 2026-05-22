@@ -21,7 +21,8 @@ SESSION_STRING = os.getenv("SESSION_STRING", "")
 # 多频道采集
 SOURCE_CHANNELS = [
     "@quanqiutufa",  # 主频道
-    "@chgq",         # 新增频道
+    "@chgq",          # 出海群
+    "@TGpromotionpro",  # 广告投放频道
 ]
 
 BLOG_DIR = WORKDIR / "blog" / "daily"
