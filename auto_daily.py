@@ -18,12 +18,19 @@ API_ID = int(os.getenv("API_ID", "0"))
 API_HASH = os.getenv("API_HASH", "")
 SESSION_STRING = os.getenv("SESSION_STRING", "")
 
-# 多频道采集
+# 多频道采集 (每个频道设定不同采集量)
 SOURCE_CHANNELS = [
-    "@quanqiutufa",  # 主频道
-    "@chgq",          # 出海群
-    "@TGpromotionpro",  # 广告投放频道
+    "@shouce",     # 出海用户手册
+    "@chgq",        # 出海群
+    "@chgx",        # 出海干货
 ]
+
+# 各频道采集量配置 (chgx需要更多历史保证每天30条)
+CHANNEL_LIMITS = {
+    "@shouce": 50,
+    "@chgq": 50,
+    "@chgx": 150,  # 提高采集量确保每天30条
+}
 
 BLOG_DIR = WORKDIR / "blog" / "daily"
 
@@ -62,6 +69,34 @@ def is_relevant(text: str) -> bool:
             return True
     return False
 
+
+FOOTER_HTML = """<div class="chlm-footer">
+                <div class="footer-brand">出海联盟 @CHLM <a href="https://t.me/chlm">https://t.me/chlm</a></div>
+                <div class="footer-desc">一个专注海外资源对接的专业社群<br>不代理 · 不中介 · 不参与任何具体业务<br>只为出海用户提供高质量、可信任的资源交流环境</div>
+                <div class="footer-channels">
+                    <div class="footer-section">社群信息：</div>
+                    <div>交流大群：@ChuHaiDDD &nbsp;&nbsp; 交流大群：@ChuHaiEEE</div>
+                    <div>公群频道：@CHGQ &nbsp;&nbsp; 供需频道：@CHGX &nbsp;&nbsp; 公告频道：@CHGG</div>
+                    <div>出海大事件：@KuaiBao &nbsp;&nbsp; 出海黑名单：@ChuHaiFFF</div>
+                </div>
+                <div class="footer-staff">
+                    <div class="footer-section">客服—安 妮 @ChuHaiHHH &nbsp;&nbsp; 客服—艾 琳 @ChuHaiKKK</div>
+                    <div>担保—安东尼 @ChuHaiGGG &nbsp;&nbsp; 公群—布鲁斯 @ChuHaiXXX</div>
+                </div>
+                <div class="footer-cta">更多出海信息，请关注出海公告频道</div>
+            </div>"""
+
+FOOTER_CSS = """
+        .chlm-footer {{ background: linear-gradient(135deg, #1a2a4a, #0d1f30); border: 1px solid #2a4a6a; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; text-align: left; }}
+        .footer-brand {{ font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.8rem; }}
+        .footer-brand a {{ color: #4fc3f7; }}
+        .footer-desc {{ color: #aaa; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }}
+        .footer-section {{ color: #4fc3f7; font-weight: 600; font-size: 0.85rem; margin: 0.8rem 0 0.4rem; }}
+        .footer-channels {{ color: #ccc; font-size: 0.85rem; line-height: 1.8; }}
+        .footer-staff {{ color: #ccc; font-size: 0.85rem; line-height: 1.8; margin-top: 0.5rem; }}
+        .footer-cta {{ color: #4fc3f7; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid #2a4a6a; }}
+        .article-footer {{ margin-top: 0; padding-top: 1.5rem; border-top: none; }}
+"""
 
 def make_html_article(title: str, date_str: str, items: list) -> str:
     """生成单篇博客HTML"""
@@ -142,8 +177,7 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
         .news-source {{ color: #4fc3f7; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }}
         .news-text {{ color: #ccc; font-size: 0.95rem; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }}
         
-        .article-footer {{ margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #2a2a4a; text-align: center; color: #555; font-size: 0.85rem; }}
-        .article-footer a {{ color: #4fc3f7; }}
+        {FOOTER_CSS}
         
         footer {{ background: #0a0a0f; border-top: 1px solid #1a1a2e; padding: 2rem 1.5rem; margin-top: 4rem; }}
         .footer-content {{ max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }}
@@ -156,6 +190,8 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
             .nav-links {{ display: none; }}
             .article-header h1 {{ font-size: 1.5rem; }}
             .article-meta {{ flex-direction: column; gap: 0.5rem; }}
+            .footer-channels div {{ font-size: 0.8rem; }}
+            .footer-staff div {{ font-size: 0.8rem; }}
         }}
     </style>
 </head>
@@ -212,9 +248,11 @@ def make_html_article(title: str, date_str: str, items: list) -> str:
                 {items_html if items_html else "<p style='color:#888;text-align:center;padding:2rem;'>今日暂无相关新内容，请稍后再访问。</p>"}
             </section>
             
+            {FOOTER_HTML}
+            
             <footer class="article-footer">
                 <p>出海联盟 CHLM · 海外最早的出海资源社区</p>
-                <p style="margin-top:0.5rem;"><a href="https://t.me/quanqiutufa">📢 订阅出海资讯频道</a> · <a href="/blog/">📚 更多文章</a></p>
+                <p style="margin-top:0.5rem;"><a href="https://t.me/chlm">📢 订阅出海资讯频道</a> · <a href="https://t.me/chgx">📚 更多文章</a></p>
             </footer>
         </article>
     </main>
@@ -291,13 +329,14 @@ async def main():
     print(f"[连接] Telegram 已连接")
     
     items: list[tuple[str, str]] = []
+    seen_texts: set[str] = set()  # 去重：按内容哈希
     cutoff = datetime.now().replace(hour=0, minute=0, second=0)
     
     # ── 2. 遍历所有频道采集 ─────────────────────────────────────────────────
     for ch in SOURCE_CHANNELS:
         print(f"[扫描] 频道: {ch}")
         try:
-            async for msg in app.get_chat_history(ch, limit=50):
+            async for msg in app.get_chat_history(ch, limit=CHANNEL_LIMITS.get(ch, 50)):
                 raw_text = msg.caption or msg.text or ""
                 if not raw_text:
                     continue
@@ -309,8 +348,17 @@ async def main():
                 source = msg.chat.username or msg.chat.title or ch.replace("@", "")
                 text = raw_text[:1500]
                 if len(text) >= 20:
-                    items.append((source, text))
-                    print(f"  + {source} | {text[:40]}...")
+                    # 去重：按内容前80字符的哈希去重
+                    text_key = text[:80]
+                    if text_key in seen_texts:
+                        continue
+                    seen_texts.add(text_key)
+                    # 附加 hashtags
+                    hashtags = " #出海联盟 #出海供需 #担保 #供应 #需求 #东南亚大事件 #数据 #流量 #账号 #群发 #拉群 #搭建 #支付 #海外"
+                    items.append((source, text + hashtags))
+                    # 安全打印（避免emoji编码问题）
+                    safe_preview = text[:40].encode('ascii', 'replace').decode('ascii')
+                    print(f"  + {source} | {safe_preview}...")
         except Exception as e:
             print(f"[错误] 扫描 {ch} 失败: {e}")
             continue
