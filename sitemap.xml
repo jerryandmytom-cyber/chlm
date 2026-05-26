@@ -1,60 +1,65 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://chlm.onrender.com/</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/index.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/about.html</loc>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/faq.html</loc>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/resources.html</loc>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/testimonials.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/join.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/directory.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://chlm.onrender.com/blog/cross-border-guide.html</loc>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-
+  <url>
+    <loc>https://chlm.onrender.com/blog/</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://chlm.onrender.com/blog/daily/2026-05-22.html</loc>
     <lastmod>2026-05-22</lastmod>
@@ -78,11 +83,17 @@
     <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-  </url>  <url><loc>https://chlm.onrender.com/blog/</loc><lastmod>2026-05-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-
+  </url>
   <url>
     <loc>https://chlm.onrender.com/blog/daily/2026-05-26.html</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-  </url></urlset>
+  </url>
+  <url>
+    <loc>https://chlm.onrender.com/blog/special/2026-05-26.html</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>
