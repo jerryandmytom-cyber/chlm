@@ -108,4 +108,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
-</urlset>
+
+  <url>
+    <loc>https://chlm.onrender.com/blog/daily/2026-05-27.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url></urlset>
