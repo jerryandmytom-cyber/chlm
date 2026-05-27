@@ -374,8 +374,20 @@ async def main():
     out_file.write_text(html, encoding="utf-8")
     print(f"[生成] {out_file.name}")
     
-    # ── 4. 更新 sitemap ──────────────────────────────────────────────────────
+    # ── 4. 更新 sitemap + 博客列表 ─────────────────────────────────────────
     sitemap_updated = update_sitemap(date_str)
+    
+    # 更新博客列表
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, "update_blog_index.py"],
+        cwd=WORKDIR,
+        capture_output=True,
+        text=True,
+        encoding="utf-8"
+    )
+    print(f"[博客列表] {result.stdout.strip()}")
+    blog_index_updated = True
     
     # ── 5. Git 推送 ──────────────────────────────────────────────────────────
     changes = run_cmd(["git", "status", "--porcelain"])
@@ -386,6 +398,7 @@ async def main():
     run_cmd(["git", "add", str(out_file.relative_to(WORKDIR))])
     if sitemap_updated:
         run_cmd(["git", "add", "sitemap.xml"])
+    run_cmd(["git", "add", "blog/index.html"])
     
     commit_msg = f"自动更新: 出海资讯日报 {date_display} ({len(items)}条内容)"
     run_cmd(["git", "commit", "-m", commit_msg])
