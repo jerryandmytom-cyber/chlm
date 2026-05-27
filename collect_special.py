@@ -3,7 +3,7 @@
 从 @shouce 采集精华帖子生成专题文章，更新博客列表并推送到GitHub
 """
 
-import os, re, subprocess
+import os, re, subprocess, asyncio
 from datetime import datetime
 from pathlib import Path
 
@@ -289,7 +289,7 @@ def run_cmd(cmd):
 
 
 async def main():
-    print(f"[专题采集] 启动 {datetime.now().strftime('%Y-%m-%d %H:%M:%spush')}")
+    print(f"[专题采集] 启动 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     date_str = datetime.now().strftime("%Y-%m-%d")
     date_display = datetime.now().strftime("%Y年%m月%d日")

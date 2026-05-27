@@ -21,6 +21,17 @@
     }
     </script>
     
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "首页", "item": "https://chlm.onrender.com/"},
+        {"@type": "ListItem", "position": 2, "name": "出海资源", "item": "https://chlm.onrender.com/resources.html"}
+      ]
+    }
+    </script>
+    
     <style>
         :root { --gold: #D4AF37; --gold-light: #F0D060; --dark-bg: #0D1117; --card-bg: #161B22; --card-border: #30363D; --text: #E6EDF3; --text-muted: #8B949E; --accent-blue: #58A6FF; --accent-green: #3FB950; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,6 +58,9 @@
 <body>
     <div class="container">
         <a href="/" class="back">← 返回首页</a>
+        <nav aria-label="Breadcrumb" style="margin-bottom:16px;font-size:0.85rem;color:var(--text-muted);">
+          <a href="/" style="color:var(--gold);">首页</a> &rsaquo; <a href="/resources.html" style="color:var(--gold);">出海资源</a>
+        </nav>
         
         <h1>出海资源大全</h1>
         <p class="subtitle">CHLM社区验证 · 真实推荐 · 持续更新</p>
