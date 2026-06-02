@@ -23,6 +23,7 @@ SOURCE_CHANNELS = [
     "@shouce",     # 出海用户手册
     "@chgq",        # 出海群
     "@chgx",        # 出海干货
+    "@TGpromotionpro",  # TG推广专业频道
 ]
 
 # 各频道采集量配置
@@ -30,20 +31,8 @@ CHANNEL_LIMITS = {
     "@shouce": 2,
     "@chgq": 50,
     "@chgx": 150,
+    "@TGpromotionpro": 2,
 }
-
-# ── 全局内容过滤配置 ─────────────────────────────────────────────────────
-# 以下关键词适用于所有监听频道
-
-# 去除"赞助商广告"及之后的内容（所有频道）
-SPONSOR_CUT_KEYWORDS = ["赞助商广告"]
-
-# 过滤菠菜/赌博关键词（所有频道）
-BAN_WORDS_ALL = [
-    "千万域名", "大盘", "U投", "返水",
-    "玩家", "投注", "会员", "首存",
-    "信誉平台", "PP电子", "加速器",
-]
 
 BLOG_DIR = WORKDIR / "blog" / "daily"
 
@@ -93,14 +82,6 @@ def is_normal_post(msg) -> bool:
     return True
 
 
-def should_block_content(text: str) -> bool:
-    """检查所有频道内容是否应被过滤（菠菜/赌博关键词）"""
-    for kw in BAN_WORDS_ALL:
-        if kw in text:
-            return True
-    return False
-
-
 def is_relevant(text: str) -> bool:
     """检查内容是否与出海营销相关（主题关键词 OR hashtag关键词）"""
     for kw in TOPIC_KEYWORDS:
@@ -117,13 +98,13 @@ FOOTER_HTML = """<div class="chlm-footer">
                 <div class="footer-desc">一个专注海外资源对接的专业社群<br>不代理 · 不中介 · 不参与任何具体业务<br>只为出海用户提供高质量、可信任的资源交流环境</div>
                 <div class="footer-channels">
                     <div class="footer-section">社群信息：</div>
-                    <div>交流大群：@ChuHaiDDD &nbsp;&nbsp; 交流大群：@ChuHaiEEE</div>
-                    <div>公群频道：@CHGQ &nbsp;&nbsp; 供需频道：@CHGX &nbsp;&nbsp; 公告频道：@CHGG</div>
-                    <div>出海大事件：@KuaiBao &nbsp;&nbsp; 出海黑名单：@ChuHaiFFF</div>
+                    <div>交流大群：<a href="https://t.me/ChuHaiDDD">https://t.me/ChuHaiDDD</a> &nbsp;&nbsp; 交流大群：<a href="https://t.me/ChuHaiEEE">https://t.me/ChuHaiEEE</a></div>
+                    <div>公群频道：<a href="https://t.me/CHGQ">https://t.me/CHGQ</a> &nbsp;&nbsp; 供需频道：<a href="https://t.me/CHGX">https://t.me/CHGX</a> &nbsp;&nbsp; 公告频道：<a href="https://t.me/CHGG">https://t.me/CHGG</a></div>
+                    <div>出海大事件：<a href="https://t.me/KuaiBao">https://t.me/KuaiBao</a> &nbsp;&nbsp; 出海黑名单：<a href="https://t.me/ChuHaiFFF">https://t.me/ChuHaiFFF</a></div>
                 </div>
                 <div class="footer-staff">
-                    <div class="footer-section">客服—安 妮 @ChuHaiHHH &nbsp;&nbsp; 客服—艾 琳 @ChuHaiKKK</div>
-                    <div>担保—安东尼 @ChuHaiGGG &nbsp;&nbsp; 公群—布鲁斯 @ChuHaiXXX</div>
+                    <div class="footer-section">客服—安 妮 <a href="https://t.me/ChuHaiHHH">https://t.me/ChuHaiHHH</a> &nbsp;&nbsp; 客服—艾 琳 <a href="https://t.me/ChuHaiKKK">https://t.me/ChuHaiKKK</a></div>
+                    <div>担保—安东尼 <a href="https://t.me/ChuHaiGGG">https://t.me/ChuHaiGGG</a> &nbsp;&nbsp; 公群—布鲁斯 <a href="https://t.me/ChuHaiXXX">https://t.me/ChuHaiXXX</a></div>
                 </div>
                 <div class="footer-cta">更多出海信息，请关注出海公告频道</div>
             </div>"""
@@ -136,6 +117,8 @@ FOOTER_CSS = """
         .footer-section {{ color: #4fc3f7; font-weight: 600; font-size: 0.85rem; margin: 0.8rem 0 0.4rem; }}
         .footer-channels {{ color: #ccc; font-size: 0.85rem; line-height: 1.8; }}
         .footer-staff {{ color: #ccc; font-size: 0.85rem; line-height: 1.8; margin-top: 0.5rem; }}
+        .footer-channels a, .footer-staff a {{ color: #4fc3f7; text-decoration: none; }}
+        .footer-channels a:hover, .footer-staff a:hover {{ color: #81d4fa; text-decoration: underline; }}
         .footer-cta {{ color: #4fc3f7; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid #2a4a6a; }}
         .article-footer {{ margin-top: 0; padding-top: 1.5rem; border-top: none; }}
 """
@@ -393,15 +376,6 @@ async def main():
                 text = raw_text[:1500]
 
                 # ── 全局内容处理（所有频道）──
-                # 1. 去除"赞助商广告"及之后的内容
-                for kw in SPONSOR_CUT_KEYWORDS:
-                    idx = text.find(kw)
-                    if idx != -1:
-                        text = text[:idx].strip()
-                # 2. 过滤菠菜/赌博关键词
-                if should_block_content(text):
-                    continue
-
                 if len(text) >= 20:
                     # 去重：按内容前80字符的哈希去重
                     text_key = text[:80]
