@@ -25,12 +25,25 @@ SOURCE_CHANNELS = [
     "@chgx",        # 出海干货
 ]
 
-# 各频道采集量配置 (chgx需要更多历史保证每天30条)
+# 各频道采集量配置
 CHANNEL_LIMITS = {
-    "@shouce": 50,
+    "@shouce": 2,
     "@chgq": 50,
-    "@chgx": 150,  # 提高采集量确保每天30条
+    "@chgx": 150,
 }
+
+# ── 全局内容过滤配置 ─────────────────────────────────────────────────────
+# 以下关键词适用于所有监听频道
+
+# 去除"赞助商广告"及之后的内容（所有频道）
+SPONSOR_CUT_KEYWORDS = ["赞助商广告"]
+
+# 过滤菠菜/赌博关键词（所有频道）
+BAN_WORDS_ALL = [
+    "千万域名", "大盘", "U投", "返水",
+    "玩家", "投注", "会员", "首存",
+    "信誉平台", "PP电子", "加速器",
+]
 
 BLOG_DIR = WORKDIR / "blog" / "daily"
 
@@ -57,6 +70,35 @@ HASHTAG_KEYWORDS = [
     "#广告投放", "#Facebook", "#TikTok", "#Instagram",
     "#SEO", "#AI营销", "#Telegram营销",
 ]
+
+
+def is_normal_post(msg) -> bool:
+    """过滤错误消息、帖子，只保留正常帖子"""
+    raw_text = msg.caption or msg.text or ""
+    if not raw_text:
+        return False
+    # 过滤错误消息常见关键词
+    error_patterns = [
+        "错误", "失败", "权限不足", "无效", "已过期", "超时",
+        "操作失败", "发送失败", "获取失败", "连接失败",
+        "请稍后重试", "请联系管理员", "无权限", "禁止访问",
+        "账号异常", "登录异常", "签名错误", "请求频繁",
+    ]
+    for p in error_patterns:
+        if p in raw_text:
+            return False
+    # 过滤过短的内容
+    if len(raw_text.strip()) < 15:
+        return False
+    return True
+
+
+def should_block_content(text: str) -> bool:
+    """检查所有频道内容是否应被过滤（菠菜/赌博关键词）"""
+    for kw in BAN_WORDS_ALL:
+        if kw in text:
+            return True
+    return False
 
 
 def is_relevant(text: str) -> bool:
@@ -302,7 +344,7 @@ def update_sitemap(date_str: str) -> bool:
 def run_cmd(cmd: list[str]) -> str:
     """执行 git 命令"""
     try:
-        result = subprocess.run(cmd, cwd=WORKDIR, capture_output=True, text=True, encoding="utf-8")
+        result = subprocess.run(cmd, cwd=WORKDIR, capture_output=True, text=True, encoding="utf-8", errors="replace")
         return result.stdout + result.stderr
     except Exception as e:
         return str(e)
@@ -340,6 +382,8 @@ async def main():
                 raw_text = msg.caption or msg.text or ""
                 if not raw_text:
                     continue
+                if not is_normal_post(msg):
+                    continue
                 if msg.date.replace(tzinfo=None) < cutoff:
                     continue
                 if not is_relevant(raw_text):
@@ -347,6 +391,17 @@ async def main():
                 
                 source = msg.chat.username or msg.chat.title or ch.replace("@", "")
                 text = raw_text[:1500]
+
+                # ── 全局内容处理（所有频道）──
+                # 1. 去除"赞助商广告"及之后的内容
+                for kw in SPONSOR_CUT_KEYWORDS:
+                    idx = text.find(kw)
+                    if idx != -1:
+                        text = text[:idx].strip()
+                # 2. 过滤菠菜/赌博关键词
+                if should_block_content(text):
+                    continue
+
                 if len(text) >= 20:
                     # 去重：按内容前80字符的哈希去重
                     text_key = text[:80]
@@ -384,9 +439,15 @@ async def main():
         cwd=WORKDIR,
         capture_output=True,
         text=True,
-        encoding="utf-8"
+        encoding="utf-8",
+        errors="replace"  # 忽略编码错误
     )
-    print(f"[博客列表] {result.stdout.strip()}")
+    stdout = result.stdout.strip() if result.stdout else ""
+    stderr = result.stderr.strip() if result.stderr else ""
+    if stdout:
+        print(f"[博客列表] {stdout}")
+    if stderr:
+        print(f"[博客列表错误] {stderr}")
     blog_index_updated = True
     
     # ── 5. Git 推送 ──────────────────────────────────────────────────────────
