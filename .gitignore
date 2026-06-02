@@ -1,3 +1,49 @@
-node_modules/
-.DS_Store
-*.log
+# Generated blog content - auto-generated daily
+blog/
+sitemap.xml
+
+# Images
+public/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Google verification files
+google*.html
+BingSiteAuth.xml
+
+# Local-only scripts (do not track)
+git_*.py
+step*.py
+rss*.py
+RSS_*.md
+*_sources.py
+telegram*.bat
+启动.bat
+collect_special.py
+extract_img.py
+fix_nav.py
+regen_daily.py
+seo_fix.py
+sync_all.py
+test_*.py
+update_blog_index.py
+update_footers.py
+verify.py
+tg_bot_dm.py
+yt_blog_sync.py
+
+# Run scripts
+run.bat
+run_cron.ps1
+
+# Temp
+*.bak
+*.tmp
